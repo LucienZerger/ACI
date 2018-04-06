@@ -141,10 +141,12 @@ echo 'exec /usr/bin/Xorg -nolisten tcp "$@" vt$XDG_VTNR' > $ACI_USERHOME/.xserve
 chown $ACI_USERNAME:users $ACI_USERHOME/.xserverrc
 
 #####################################
-# set root password
-echo -e "$COL_GREEN *** Set root password *** $COL_RESET"
-echo "Set ROOT password:"
-passwd
+# set root password and disable terminal access
+echo -e "$COL_GREEN *** Disable root terminal access *** $COL_RESET"
+#echo -e "$COL_GREEN *** Set root password *** $COL_RESET"
+#echo "Set ROOT password:"
+#passwd
+passwd -l root
 
 #####################################
 # enable services

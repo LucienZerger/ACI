@@ -4,10 +4,10 @@ ACI_USERNAME=user
 
 # name of computer
 #ACI_HOSTNAME=shutdown
-ACI_HOSTNAME=deathhide
+ACI_HOSTNAME=host
 
 # encrypt root partition if set to true
-ACI_CRYPTPART=false
+ACI_CRYPTPART=true
 
 # desktop environment, can be i3 or kdeplasma
 ACI_DE=kdeplasma
