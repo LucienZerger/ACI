@@ -19,7 +19,7 @@ pacman -S --noconfirm sudo openssh openssl iw wpa_supplicant zsh zsh-completions
   rofi pavucontrol alsa-utils acpi sysstat scrot  yaourt
 
 # install software dev tools
-pacman -S --noconfirm git
+pacman -S --noconfirm git docker
 
 # install laptop driver packages
 pacman -S --noconfirm xf86-input-synaptics xf86-video-amdgpu intel-ucode
@@ -155,4 +155,5 @@ systemctl enable sshd
 systemctl enable NetworkManager
 systemctl enable nftables
 systemctl enable dnscrypt-proxy
+systemctl enable docker
 
