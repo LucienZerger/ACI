@@ -42,7 +42,7 @@ pacman -S --noconfirm syslinux gptfdisk f2fs-tools btrfs-progs
 pacman -S --noconfirm vlc chromium keepassx2 virtualbox
 
 # install security applications
-pacman -S --noconfirm sshguard nftables nmap
+pacman -S --noconfirm sshguard nftables nmap openvpn dnscrypt-proxy
 
 # update /etc/pacman.conf
 #cat acires-aur >> /etc/pacman.conf
@@ -89,6 +89,11 @@ echo -e "$COL_GREEN *** Add encryption hook - /etc/mkinitcpio.conf *** $COL_RESE
 #echo "HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)" >> /etc/mkinitcpio.conf
 #awk '"HOOKS="{gsub("block filesystems", "block encrypt filesystems")};{print}' /etc/mkinitcpio.conf.b > /etc/mkinitcpio.conf
 mkinitcpio -p linux
+
+#####################################
+# encrypt DNS traffic (no need to use 208.67.220.220,208.67.222.222) and put 127.0.0.1 in resolv.conf or NetworkManager
+echo "ResolverName cisco" > /etc/dnscrypt-proxy.conf
+#echo "ResolverName cisco-familyshield" > /etc/dnscrypt-proxy.conf
 
 #####################################
 # disable ssh root AND password login, requiring keys only
@@ -147,4 +152,5 @@ echo -e "$COL_GREEN *** Enabling essential services *** $COL_RESET"
 systemctl enable sshd
 systemctl enable NetworkManager
 systemctl enable nftables
+systemctl enable dnscrypt-proxy
 

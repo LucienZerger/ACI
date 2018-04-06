@@ -15,3 +15,9 @@ ACI_DE=kdeplasma
 # automatically set, do NOT modify
 ACI_USERHOME=/home/$ACI_USERNAME
 
+# global git email
+ACI_GITEMAIL=lucien.zerger@gmail.com
+
+# global git name
+ACI_GITNAME=Dieter
+
