@@ -1,4 +1,33 @@
+# encrypt root partition if set to true
+export ACI_CRYPTPART=true
+
+# name of user created by installer
+#ACI_USERNAME=dieter
+export ACI_USERNAME=user
+
+# name of computer
+#ACI_HOSTNAME=shutdown
+export ACI_HOSTNAME=host
+
+# desktop environment, can be i3 or kdeplasma
+export ACI_DE=kdeplasma
+
+# automatically set, do NOT modify
+export ACI_USERHOME=/home/$ACI_USERNAME
+
 #ACI_CRYPT_KEYFILE=$1
+
+if [ "x$ACI_HOSTNAME" = "x" ]
+then
+  echo "No hostname specified."
+  exit 1
+fi
+
+if [ "x$ACI_USERNAME" = "x" ]
+then
+  echo "No username specified."
+  exit 1
+fi
 
 # Colors
 ESC_SEQ="\x1b["
@@ -16,7 +45,7 @@ COL_CYAN=$ESC_SEQ"36;01m"
 echo -e "$COL_GREEN *** Install additional packages *** $COL_RESET"
 pacman -S --noconfirm sudo openssh openssl iw wpa_supplicant zsh zsh-completions \
   wpa_actiond ifplugd pulseaudio pulseaudio-equalizer arandr feh \
-  rofi pavucontrol alsa-utils acpi sysstat scrot  yaourt
+  rofi pavucontrol alsa-utils acpi sysstat scrot  yaourt unrar
 
 # install software dev tools
 pacman -S --noconfirm git docker
@@ -70,7 +99,13 @@ cp /boot/syslinux/syslinux.cfg /boot/syslinux/syslinux.cfg.b
 echo "DEFAULT arch" > /boot/syslinux/syslinux.cfg
 echo "LABEL arch" >> /boot/syslinux/syslinux.cfg
 echo "  LINUX ../vmlinuz-linux" >> /boot/syslinux/syslinux.cfg
-echo "  APPEND root=/dev/sda2 rw" >> /boot/syslinux/syslinux.cfg
+if [ "x$ACI_CRYPTPART" = "xtrue" ]
+then
+  echo "  APPEND cryptdevice=/dev/sda2:root root=/dev/mapper/root rw" >> /boot/syslinux/syslinux.cfg
+else
+  echo "  APPEND root=/dev/sda2 rw" >> /boot/syslinux/syslinux.cfg
+fi
+
 echo "  INITRD ../intel-ucode.img,../initramfs-linux.img" >> /boot/syslinux/syslinux.cfg
 #echo "DEFAULT arch" > /boot/syslinux/syslinux.cfg.tmp1
 #awk '/^LABEL arch$/ {f=1} f==0 {next} /^$/ {exit} {print substr($0, 1)}' /boot/syslinux/syslinux.cfg.b >> /boot/syslinux/syslinux.cfg.tmp1
@@ -82,11 +117,14 @@ echo "  INITRD ../intel-ucode.img,../initramfs-linux.img" >> /boot/syslinux/sysl
 #####################################
 # config enc
 echo -e "$COL_GREEN *** Add encryption hook - /etc/mkinitcpio.conf *** $COL_RESET"
-#cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.b
-#echo "MODULES=()" > /etc/mkinitcpio.conf
-#echo "BINARIES=()" >> /etc/mkinitcpio.conf
-#echo "FILES=(/$ACI_CRYPT_KEYFILE)" >> /etc/mkinitcpio.conf
-#echo "HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)" >> /etc/mkinitcpio.conf
+if [ "x$ACI_CRYPTPART" = "xtrue" ]
+then
+  cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.b
+  echo "MODULES=()" > /etc/mkinitcpio.conf
+  echo "BINARIES=()" >> /etc/mkinitcpio.conf
+  echo "FILES=()" >> /etc/mkinitcpio.conf
+  echo "HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)" >> /etc/mkinitcpio.conf
+fi
 #awk '"HOOKS="{gsub("block filesystems", "block encrypt filesystems")};{print}' /etc/mkinitcpio.conf.b > /etc/mkinitcpio.conf
 mkinitcpio -p linux
 
@@ -139,6 +177,13 @@ fi
 chown $ACI_USERNAME:users $ACI_USERHOME/.xinitrc
 echo 'exec /usr/bin/Xorg -nolisten tcp "$@" vt$XDG_VTNR' > $ACI_USERHOME/.xserverrc
 chown $ACI_USERNAME:users $ACI_USERHOME/.xserverrc
+
+#####################################
+# download and extract tor browser for user
+cd ACI_USERHOME
+#curl xxxxxxx
+#tar xf tor-browser-linux64-7.5.3_en-US.tar.xz
+#chown -R $ACI_USERNAME:users tor-browser_en-US
 
 #####################################
 # set root password and disable terminal access

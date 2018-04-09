@@ -1,3 +1,6 @@
+# encrypt root partition if set to true
+export ACI_CRYPTPART=true
+
 #ACI_CRYPT_KEYFILE=$1
 
 # Colors
@@ -45,7 +48,9 @@ parted -s -a optimal /dev/sda mkpart primary 257MiB 100% name 2 root
 # **** IDEA: passphrase unlocks root, root and BACKUP location contains keyfile for home
 if [ "x$ACI_CRYPTPART" = "xtrue" ]
 then
+  echo -e "$COL_GREEN *** Init crypt partition *** $COL_RESET"
   cryptsetup -s 512 -i 5000 luksFormat /dev/sda2
+  echo -e "$COL_GREEN *** Open crypt partition *** $COL_RESET"
   cryptsetup luksOpen /dev/sda2 root
 fi
 #echo -e "$COL_GREEN *** Open encrypted partitions *** $COL_RESET"
